@@ -1,4 +1,6 @@
 harukaze
 ========
+Various Unity files for the Harukaze Game.
 
-Files for Harukaze Game Development
+Programming by Grant Storey
+Art by Babak Saadat
