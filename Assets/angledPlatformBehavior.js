@@ -22,14 +22,16 @@ function Start()
 {
     charScript = GameObject.Find("Masaru").GetComponent(characterControl);
     
-    circleOffsetY = charScript.circleColliderYOffset;
+    var scale : float = GameObject.Find("Masaru").GetComponent(Transform).localScale.y;
+    circleOffsetY = charScript.circleColliderYOffset*scale;
+    var cCR : float = charScript.circleColliderRadius*scale;
     
     var angle: float = (transform.eulerAngles.z)*(Mathf.Deg2Rad);
     mySlope = Mathf.Tan(angle);
     
     
-    var xDif : float = Mathf.Cos(angle+(Mathf.PI/2)) * (charScript.circleColliderRadius);
-    var yDif : float = Mathf.Sin(angle+(Mathf.PI/2)) * (charScript.circleColliderRadius);
+    var xDif : float = Mathf.Cos(angle+(Mathf.PI/2)) * (cCR);
+    var yDif : float = Mathf.Sin(angle+(Mathf.PI/2)) * (cCR);
     
     
     var baseX : float = transform.position.x;
@@ -55,7 +57,7 @@ function Update()
 // handle physics updates
 function FixedUpdate()
 {
-    var charY : float = charTransform.position.y;
+    var charY : float = charTransform.position.y + circleOffsetY;
     var charX : float = charTransform.position.x;
     // if the player is below the platform and it is enabled, disable it
     if (myCollider.enabled && ((mySlope * charX) - charY - fudgeFactor) > myConstant)
@@ -65,7 +67,6 @@ function FixedUpdate()
     // if the player is above the platform and it is disabled, enable it
     else if (!myCollider.enabled && ((mySlope * charX) - charY + fudgeFactor) < myConstant)
     {
-        Debug.Log(charY +"," + circleOffsetY);
         myCollider.enabled = true;
     }
 }

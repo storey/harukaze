@@ -6,15 +6,19 @@ private var myY : float;
 
 private var charTransform : Transform;
 
-/*
-private var charScript : characterControl;
-        charScript.FlipPlayer();
-    charScript = GameObject.Find("Masaru").GetComponent(characterControl);*/
+private var halfYSize : float;
 
-private var fudgeFactor : float = 0.2f;
+
+private var charScript : characterControl;
+     //   charScript.FlipPlayer();
+
+private var fudgeFactor : float = 0.01f;
     
 function Start () 
-{
+{ 
+    charScript = GameObject.Find("Masaru").GetComponent(characterControl);
+    halfYSize = (-1*charScript.circleColliderYOffset + charScript.circleColliderRadius) * GameObject.Find("Masaru").GetComponent(Transform).localScale.y;
+    
     myCollider = GetComponent(EdgeCollider2D);
     myCollider.enabled = false;
     var arr = myCollider.points;
@@ -25,7 +29,7 @@ function Start ()
     {
         max = Mathf.Max(max, arr[i].y);
     }
-    myY = GetComponent(Transform).position.y + max;
+    myY = GetComponent(Transform).position.y + max*GetComponent(Transform).localScale.y;
     charTransform = GameObject.Find("Masaru").GetComponent(Transform);
 }
 
@@ -39,12 +43,12 @@ function Update ()
 function FixedUpdate()
 {
     //var masBC2D = GameObject.Find("Masaru").GetComponent(BoxCollider2D);
-    var charY = charTransform.position.y; //+ masBC2D.center.y;// + (masBC2D.size.y/2.0);
-    if (myCollider.enabled && charY < (myY - fudgeFactor))
+    var charY = charTransform.position.y - halfYSize; //+ masBC2D.center.y;// + (masBC2D.size.y/2.0);
+    if (myCollider.enabled && (charY < (myY - fudgeFactor)))
     {
         myCollider.enabled = false;
     }
-    else if (!myCollider.enabled && charY > (myY - fudgeFactor))
+    else if (!myCollider.enabled && (charY > (myY + fudgeFactor)))
     {
         myCollider.enabled = true;
     }

@@ -17,7 +17,7 @@ function Start ()
 // changing the color of background sprites.
 function Update () 
 {
-     if(Input.GetKeyUp(KeyCode.LeftControl))
+    if(Input.GetKeyUp(KeyCode.LeftControl))
     {
         inMedState = !inMedState;
     }
