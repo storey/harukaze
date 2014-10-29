@@ -12,7 +12,7 @@ private var halfYSize : float;
 private var charScript : characterControl;
      //   charScript.FlipPlayer();
 
-private var fudgeFactor : float = 0.01f;
+private var fudgeFactor : float = 0.03f;
     
 function Start () 
 { 

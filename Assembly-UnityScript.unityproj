@@ -46,11 +46,15 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\MeditativeStateController.js" />
+     <Compile Include="Assets\Scripts\ChakraBar.js" />
+     <Compile Include="Assets\Scripts\HUDfollow.js" />
+     <Compile Include="Assets\Scripts\MeditativeStateController.js" />
+     <Compile Include="Assets\Scripts\angledPlatformBehavior.js" />
+     <Compile Include="Assets\Scripts\cameraControl.js" />
      <Compile Include="Assets\Scripts\characterControl.js" />
+     <Compile Include="Assets\Scripts\healthControl.js" />
      <Compile Include="Assets\Scripts\platformBehavior.js" />
-     <Compile Include="Assets\angledPlatformBehavior.js" />
-     <Compile Include="Assets\cameraControl.js" />
+     <Compile Include="Assets\stanceControl.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
