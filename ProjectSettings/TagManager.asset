@@ -71,3 +71,7 @@ TagManager:
     userID: 5
     uniqueID: 149272721
     locked: 0
+  - name: MeditativeState
+    userID: 6
+    uniqueID: 4013944821
+    locked: 0

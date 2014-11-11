@@ -43,6 +43,9 @@ private var anim : Animator;
 // stores sqrt(2)/2
 private var root2Over2 : float;
 
+// holds the meditative state script to figure out whether we are in the meditative state.
+private var meditativeScript : MeditativeStateController;
+
 function Awake()
 {
     // get the offset and radius of the circle collider (used by angled platforms)
@@ -54,6 +57,10 @@ function Awake()
 
 function Start () 
 {
+    // get the meditative state script
+    meditativeScript = GameObject.Find("MeditativeStateManager").GetComponent(MeditativeStateController);
+    
+    
     // get the rigid body for the character
     rb = GetComponent(Rigidbody2D);
     anim = GetComponent(Animator);
@@ -66,39 +73,42 @@ function Start ()
 
 function Update () 
 { 
-    // onWallChecker is point just in front of the character. We draw a line from the character to this point,
-    // and check if the line intersects anything on the "wall" layer. If so, the player is "walled".
-    walled = Physics2D.Linecast(transform.position, onWallChecker.position, (1 << LayerMask.NameToLayer("Wall")));
-           
-    // wallJumpingChecker is point behind the character. We draw a line from the character to this point,
-    // and check if the line intersects anything on the "wall" layer. If so, the player has just wall jumped.
-    // allows infinite jumping up one wall
-    //wallJumping = Physics2D.Linecast(transform.position, wallJumpingChecker.position, (1 << LayerMask.NameToLayer("Wall")));
-    
-    
-    // if the jump button is pressed and the player is walled, wall jump
-    if(Input.GetButtonDown("Jump") && walled)
+    if (!meditativeScript.inMedState)
     {
-        wallJump = true;
+        // onWallChecker is point just in front of the character. We draw a line from the character to this point,
+        // and check if the line intersects anything on the "wall" layer. If so, the player is "walled".
+        walled = Physics2D.Linecast(transform.position, onWallChecker.position, (1 << LayerMask.NameToLayer("Wall")));
+               
+        // wallJumpingChecker is point behind the character. We draw a line from the character to this point,
+        // and check if the line intersects anything on the "wall" layer. If so, the player has just wall jumped.
+        // allows infinite jumping up one wall
+        //wallJumping = Physics2D.Linecast(transform.position, wallJumpingChecker.position, (1 << LayerMask.NameToLayer("Wall")));
         
-        wallJumping = true;
-    }
-    else
-    {
-        // groundChecker is point just below the characters feet. We draw a line from the character to this point,
-        // and check if the line intersects anything on the "ground" layer. If so, the player is "grounded".
-        grounded = Physics2D.Linecast(transform.position, groundChecker.position, (1 << LayerMask.NameToLayer("Ground")));
         
-        // if the character has returned to the ground after wall jumping, give them movement control again
-        if (wallJumping && (grounded || (rb.velocity.y == 0)))
+        // if the jump button is pressed and the player is walled, wall jump
+        if(Input.GetButtonDown("Jump") && walled)
         {
-            wallJumping = false;
+            wallJump = true;
+            
+            wallJumping = true;
         }
-    
-        // if the jump button is pressed and the player is grounded, jump
-        if(Input.GetButtonDown("Jump") && grounded)
+        else
         {
-            jump = true;
+            // groundChecker is point just below the characters feet. We draw a line from the character to this point,
+            // and check if the line intersects anything on the "ground" layer. If so, the player is "grounded".
+            grounded = Physics2D.Linecast(transform.position, groundChecker.position, (1 << LayerMask.NameToLayer("Ground")));
+            
+            // if the character has returned to the ground after wall jumping, give them movement control again
+            if (wallJumping && (grounded || (rb.velocity.y == 0)))
+            {
+                wallJumping = false;
+            }
+        
+            // if the jump button is pressed and the player is grounded, jump
+            if(Input.GetButtonDown("Jump") && grounded)
+            {
+                jump = true;
+            }
         }
     }
 }

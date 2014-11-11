@@ -32,11 +32,11 @@ private var health : Transform;
 var peachesPerRow : int = 8;
 
 // extra distance needed to make half peach at proper height
-var halfPeachHeightBoost : float = -0.03;
+var halfPeachHeightBoost : float = -0.6;
 
 // extra distance needed to make pit at proper width/height
-var pitWidthBoost : float = (716/100.0) * (0.05 - 0.018)/2;
-var pitHeightBoost : float = (-1 * (755/100.0) * (0.05 - 0.018)/2);
+var pitWidthBoost : float = 3.85;
+var pitHeightBoost : float = -6;
 
 // holds how much time between increments/decrements when adding/subtracting a large amount of health
 var multipleSpeed : float = 0.1;
@@ -50,6 +50,10 @@ function Start ()
     peachHeight = peachSpriteH * fullPeach.localScale.y;
     health  = GameObject.Find("HealthController").transform;
     var peach : Transform;
+    
+    halfPeachHeightBoost *= halfPeach.localScale.y;
+    pitWidthBoost *= pit.localScale.x;
+    pitHeightBoost *= pit.localScale.y;
     
     // have a spot for each possible peach
     peaches = new Transform[(maxHealth+1)/2];
@@ -189,7 +193,7 @@ function takeHealth(N : int)
 
 function Update () 
 {
-    /* For testing
+    /* For testing 
     if(Input.GetKeyUp(KeyCode.E))
     {
         addHealth(5);
@@ -197,5 +201,5 @@ function Update ()
     if(Input.GetKeyUp(KeyCode.Q))
     {
         takeHealth(5);
-    }*/
+    }//*/
 }
