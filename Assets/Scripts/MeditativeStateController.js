@@ -11,8 +11,9 @@ private var medView : GameObject;
 
 private var wheelScript : meditativeWheel;
 private var timerScript : enzoTimerScript;
+private var followScript : HUDfollow;
 
-function Start () 
+function Awake () 
 {
     baseColor = Color(1, 1, 1, 1);
     medColor = Color(232/255.0, 126/255.0, 238/255.0, 1);
@@ -23,6 +24,11 @@ function Start ()
     
     wheelScript = GameObject.Find("EnzoWheel").GetComponent(meditativeWheel);
     timerScript = GameObject.Find("EnzoTimer").GetComponent(enzoTimerScript);
+    followScript = GameObject.Find("MeditativeState").GetComponent(HUDfollow);
+    
+    wheelScript.setup();
+    timerScript.setup();
+    followScript.setup();
     
     medView.SetActive(false);
     
@@ -56,6 +62,7 @@ function enterState()
         
     HUD.SetActive(false);
     medView.SetActive(true);
+    followScript.updatePosition();
         
     wheelScript.resetVars();
         

@@ -9,7 +9,7 @@ private var running;
 // holds the meditative state script to figure out whether we are in the meditative state.
 private var meditativeScript : MeditativeStateController;
 
-function Start () 
+function setup () 
 {
     resetTimer();
     running = false;    

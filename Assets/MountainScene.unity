@@ -2385,7 +2385,7 @@ MonoBehaviour:
   windSprite: {fileID: 21300006, guid: de4f5fe7f483b475495965eadbc24c6c, type: 3}
   heavenSprite: {fileID: 21300008, guid: de4f5fe7f483b475495965eadbc24c6c, type: 3}
   baseSprite: {fileID: 21300000, guid: b30eac448f9fa4270abd0c6821b24f73, type: 3}
-  numFrames: 20
+  animationTime: .400000006
 --- !u!1 &1341402188
 GameObject:
   m_ObjectHideFlags: 0

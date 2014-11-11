@@ -20,8 +20,9 @@ private var enzo4 : Transform;
 
 private var rotating: boolean;
 
+var animationTime : float = 0.4;
 
-var numFrames : int = 100;
+private var numFrames : int;
 
 private var fraction : float = 72;
 
@@ -40,7 +41,7 @@ private var meditativeScript : MeditativeStateController;
 private var stanceScript : stanceControl;
 
 // get variables for the 5 circles inside the wheel
-function Start () 
+function setup () 
 {
     results = new int[5];
     for (var i : int; i < 5; i++)
@@ -61,6 +62,9 @@ function Start ()
     enzo4 = GameObject.Find("EnzoWheelEnzo4").GetComponent(Transform);
     
     currentSelection = 0;
+    
+    
+    numFrames = Mathf.Floor(animationTime/Time.fixedDeltaTime);
     
     stepDegree = fraction / numFrames;
     
@@ -163,7 +167,6 @@ function startRotation(Element : int)
 // rotate the circle the proper amount
 function rotateCircle()
 {
-    
     for (var i : int = 0; i < numFrames; i++)
     {
         yield WaitForFixedUpdate;
