@@ -3188,7 +3188,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1236054971}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.91616249, y: -2.61821818, z: 0}
+  m_LocalPosition: {x: -8.4356041, y: -2.64354134, z: 0}
   m_LocalScale: {x: .235261351, y: .235260874, z: 1}
   m_Children: []
   m_Father: {fileID: 570682889}
@@ -4198,6 +4198,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 1786435771}
   - 68: {fileID: 1786435772}
+  - 114: {fileID: 1786435773}
   m_Layer: 14
   m_Name: Collider
   m_TagString: Untagged
@@ -4229,6 +4230,17 @@ EdgeCollider2D:
   m_Points:
   - {x: -.484644592, y: -4.04418984e-07}
   - {x: .5, y: 0}
+--- !u!114 &1786435773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1786435770}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9ff37e0a8ee44072b0ccb156a9744ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1811429242
 GameObject:
   m_ObjectHideFlags: 0
@@ -4554,7 +4566,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1996093410}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -12.3542175, y: -2.90696406, z: 0}
+  m_LocalPosition: {x: -13.2912045, y: -2.60307574, z: 0}
   m_LocalScale: {x: .235261351, y: .235260874, z: 1}
   m_Children: []
   m_Father: {fileID: 570682889}

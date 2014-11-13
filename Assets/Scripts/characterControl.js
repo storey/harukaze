@@ -90,24 +90,16 @@ function Update ()
         if (Input.GetKeyUp(KeyCode.E))
         {
             var rc2D : RaycastHit2D = Physics2D.Linecast(transform.position, onWallChecker.position, (1 << LayerMask.NameToLayer("Interact")));
-            var script : interactionScript = rc2D.transform.gameObject.GetComponent("interactionScript");
-            script.Interact();
+            if (rc2D.collider != null)
+            {
+                var script : interactionScript = rc2D.transform.gameObject.GetComponent("interactionScript");
+                script.Interact();
+            }
         }
         
         // onWallChecker is point just in front of the character. We draw a line from the character to this point,
         // and check if the line intersects anything on the "wall" layer. If so, the player is "walled".
         walled = Physics2D.Linecast(transform.position, onWallChecker.position, (1 << LayerMask.NameToLayer("Wall")));
-        
-        // similarly, check if the user is against a ladder
-        if (!walled)
-        {
-            laddered = Physics2D.Linecast(transform.position, onWallChecker.position, (1 << LayerMask.NameToLayer("Ladder")));
-        }
-        else
-        {
-            laddered = false;
-        }
-        
         
         // if the jump button is pressed and the player is walled, wall jump
         if(Input.GetButtonDown("Jump") && walled)
@@ -182,7 +174,6 @@ function FixedUpdate()
         
         if (laddered)
         {
-            rb.gravityScale = 0;
             yVel = 0;
             if(Input.GetKey(KeyCode.W))
             {
@@ -192,10 +183,6 @@ function FixedUpdate()
             {
                 yVel = -1*climbSpeed;
             }
-        }
-        else
-        {
-            rb.gravityScale = 1;
         }
         
         // set X velocity based on the user input
@@ -281,4 +268,18 @@ function cancelDamageState()
 {
     damageState = false;
     StopCoroutine("damageWait");
+}
+
+// call when the player moves onto a ladder
+function ontoLadder()
+{
+    rb.gravityScale = 0;
+    laddered = true;
+}
+
+// call when the player leaves a ladder
+function offLadder()
+{
+    rb.gravityScale = 1;
+    laddered = false;
 }
