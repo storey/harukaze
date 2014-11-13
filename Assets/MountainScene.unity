@@ -85,7 +85,7 @@ GameObject:
   - 212: {fileID: 10786249}
   - 68: {fileID: 10786248}
   - 114: {fileID: 10786247}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: cloud1
   m_TagString: MeditativeBG
   m_Icon: {fileID: 0}
@@ -103,7 +103,7 @@ Transform:
   m_LocalScale: {x: .235444039, y: .235260993, z: 1}
   m_Children: []
   m_Father: {fileID: 570682889}
-  m_RootOrder: 6
+  m_RootOrder: 7
 --- !u!114 &10786247
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -160,7 +160,7 @@ GameObject:
   - 212: {fileID: 29004876}
   - 68: {fileID: 29004875}
   - 114: {fileID: 29004874}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: cloud1
   m_TagString: MeditativeBG
   m_Icon: {fileID: 0}
@@ -178,7 +178,7 @@ Transform:
   m_LocalScale: {x: .235260993, y: .235260993, z: 1}
   m_Children: []
   m_Father: {fileID: 570682889}
-  m_RootOrder: 16
+  m_RootOrder: 17
 --- !u!114 &29004874
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -235,7 +235,7 @@ GameObject:
   - 212: {fileID: 58432490}
   - 68: {fileID: 58432489}
   - 114: {fileID: 58432488}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: cloud1
   m_TagString: MeditativeBG
   m_Icon: {fileID: 0}
@@ -253,7 +253,7 @@ Transform:
   m_LocalScale: {x: .235260993, y: .235260993, z: 1}
   m_Children: []
   m_Father: {fileID: 570682889}
-  m_RootOrder: 10
+  m_RootOrder: 11
 --- !u!114 &58432488
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -441,8 +441,10 @@ MonoBehaviour:
   circleColliderYOffset: 0
   circleColliderRadius: 0
   maxSpeed: 7.5
+  jumpSpeed: 16
   climbSpeed: 4
-  jumpForce: 800
+  groundLayer: 12
+  platformLayer: 13
 --- !u!50 &180473742
 Rigidbody2D:
   m_ObjectHideFlags: 0
@@ -621,7 +623,7 @@ GameObject:
   - 212: {fileID: 218833639}
   - 68: {fileID: 218833638}
   - 114: {fileID: 218833637}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: cloud1
   m_TagString: MeditativeBG
   m_Icon: {fileID: 0}
@@ -639,7 +641,7 @@ Transform:
   m_LocalScale: {x: .235260993, y: .235260993, z: 1}
   m_Children: []
   m_Father: {fileID: 570682889}
-  m_RootOrder: 5
+  m_RootOrder: 6
 --- !u!114 &218833637
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -696,7 +698,7 @@ GameObject:
   - 212: {fileID: 219766749}
   - 68: {fileID: 219766748}
   - 114: {fileID: 219766747}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: cloud1
   m_TagString: MeditativeBG
   m_Icon: {fileID: 0}
@@ -759,7 +761,7 @@ Transform:
   m_LocalScale: {x: .235260993, y: .235260993, z: 1}
   m_Children: []
   m_Father: {fileID: 570682889}
-  m_RootOrder: 2
+  m_RootOrder: 3
 --- !u!1 &220171551
 GameObject:
   m_ObjectHideFlags: 0
@@ -939,7 +941,7 @@ GameObject:
   - 212: {fileID: 405301509}
   - 68: {fileID: 405301508}
   - 114: {fileID: 405301507}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: cloud1
   m_TagString: MeditativeBG
   m_Icon: {fileID: 0}
@@ -957,7 +959,7 @@ Transform:
   m_LocalScale: {x: .235260993, y: .235260993, z: 1}
   m_Children: []
   m_Father: {fileID: 570682889}
-  m_RootOrder: 11
+  m_RootOrder: 12
 --- !u!114 &405301507
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1169,7 +1171,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 448075423}
   - 68: {fileID: 448075424}
-  m_Layer: 13
+  m_Layer: 14
   m_Name: GameObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1261,7 +1263,7 @@ GameObject:
   - 212: {fileID: 485401682}
   - 68: {fileID: 485401681}
   - 114: {fileID: 485401680}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: cloud1
   m_TagString: MeditativeBG
   m_Icon: {fileID: 0}
@@ -1279,7 +1281,7 @@ Transform:
   m_LocalScale: {x: .235260993, y: .235260993, z: 1}
   m_Children: []
   m_Father: {fileID: 570682889}
-  m_RootOrder: 7
+  m_RootOrder: 8
 --- !u!114 &485401680
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1427,6 +1429,7 @@ Transform:
   m_LocalPosition: {x: 21.0039062, y: 3.35907364, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 1495097623}
   - {fileID: 1236054972}
   - {fileID: 1996093413}
   - {fileID: 219766750}
@@ -1506,7 +1509,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 654409144}
   - 68: {fileID: 654409145}
-  m_Layer: 13
+  m_Layer: 14
   m_Name: GameObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1626,8 +1629,10 @@ MonoBehaviour:
   circleColliderYOffset: 0
   circleColliderRadius: 0
   maxSpeed: 7.5
+  jumpSpeed: 16
   climbSpeed: 4
-  jumpForce: 800
+  groundLayer: 12
+  platformLayer: 13
 --- !u!50 &691683789
 Rigidbody2D:
   m_ObjectHideFlags: 0
@@ -1726,7 +1731,7 @@ GameObject:
   - 212: {fileID: 752370260}
   - 68: {fileID: 752370259}
   - 114: {fileID: 752370258}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: cloud1
   m_TagString: MeditativeBG
   m_Icon: {fileID: 0}
@@ -1744,7 +1749,7 @@ Transform:
   m_LocalScale: {x: .235260993, y: .235260993, z: 1}
   m_Children: []
   m_Father: {fileID: 570682889}
-  m_RootOrder: 4
+  m_RootOrder: 5
 --- !u!114 &752370258
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2467,7 +2472,7 @@ GameObject:
   - 212: {fileID: 944245054}
   - 68: {fileID: 944245053}
   - 114: {fileID: 944245052}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: cloud1
   m_TagString: MeditativeBG
   m_Icon: {fileID: 0}
@@ -2485,7 +2490,7 @@ Transform:
   m_LocalScale: {x: .235260993, y: .235260993, z: 1}
   m_Children: []
   m_Father: {fileID: 570682889}
-  m_RootOrder: 17
+  m_RootOrder: 18
 --- !u!114 &944245052
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2714,7 +2719,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1054345538}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: .514465809, z: 0}
+  m_LocalPosition: {x: 0, y: .539615154, z: 0}
   m_LocalScale: {x: .469999999, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1235226018}
@@ -3045,7 +3050,7 @@ GameObject:
   - 4: {fileID: 1226260292}
   - 68: {fileID: 1226260294}
   - 114: {fileID: 1226260293}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: topOfGate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3098,7 +3103,7 @@ GameObject:
   - 212: {fileID: 1235226017}
   - 61: {fileID: 1235226016}
   - 114: {fileID: 1235226015}
-  m_Layer: 15
+  m_Layer: 16
   m_Name: strangeObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3174,7 +3179,7 @@ GameObject:
   - 212: {fileID: 1236054975}
   - 68: {fileID: 1236054974}
   - 114: {fileID: 1236054973}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: cloud1
   m_TagString: MeditativeBG
   m_Icon: {fileID: 0}
@@ -3188,11 +3193,11 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1236054971}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.4356041, y: -2.64354134, z: 0}
+  m_LocalPosition: {x: -6.96277428, y: -2.41098976, z: 0}
   m_LocalScale: {x: .235261351, y: .235260874, z: 1}
   m_Children: []
   m_Father: {fileID: 570682889}
-  m_RootOrder: 0
+  m_RootOrder: 1
 --- !u!114 &1236054973
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3249,7 +3254,7 @@ GameObject:
   - 212: {fileID: 1236697639}
   - 68: {fileID: 1236697638}
   - 114: {fileID: 1236697637}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: cloud1
   m_TagString: MeditativeBG
   m_Icon: {fileID: 0}
@@ -3267,7 +3272,7 @@ Transform:
   m_LocalScale: {x: .235260993, y: .235260993, z: 1}
   m_Children: []
   m_Father: {fileID: 570682889}
-  m_RootOrder: 8
+  m_RootOrder: 9
 --- !u!114 &1236697637
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3322,7 +3327,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 1268107922}
   - 68: {fileID: 1268107923}
-  m_Layer: 13
+  m_Layer: 14
   m_Name: GameObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3415,7 +3420,7 @@ GameObject:
   - 212: {fileID: 1318145908}
   - 68: {fileID: 1318145907}
   - 114: {fileID: 1318145906}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: cloud1
   m_TagString: MeditativeBG
   m_Icon: {fileID: 0}
@@ -3433,7 +3438,7 @@ Transform:
   m_LocalScale: {x: .235260993, y: .235260993, z: 1}
   m_Children: []
   m_Father: {fileID: 570682889}
-  m_RootOrder: 15
+  m_RootOrder: 16
 --- !u!114 &1318145906
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3588,7 +3593,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 1359029038}
   - 68: {fileID: 1359029039}
-  m_Layer: 13
+  m_Layer: 14
   m_Name: GameObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3758,7 +3763,7 @@ GameObject:
   - 212: {fileID: 1489013485}
   - 68: {fileID: 1489013484}
   - 114: {fileID: 1489013483}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: cloud1
   m_TagString: MeditativeBG
   m_Icon: {fileID: 0}
@@ -3776,7 +3781,7 @@ Transform:
   m_LocalScale: {x: .235260993, y: .235260993, z: 1}
   m_Children: []
   m_Father: {fileID: 570682889}
-  m_RootOrder: 12
+  m_RootOrder: 13
 --- !u!114 &1489013483
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3806,6 +3811,81 @@ SpriteRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1489013481}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_LightmapIndex: 255
+  m_LightmapTilingOffset: {x: 1, y: 1, z: 0, w: 0}
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000e000000000000000, type: 0}
+  m_SubsetIndices: 
+  m_StaticBatchRoot: {fileID: 0}
+  m_UseLightProbes: 0
+  m_LightProbeAnchor: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_SortingLayerID: 1535931219
+  m_SortingOrder: 1
+  m_Sprite: {fileID: 21300000, guid: aba266fd26554493d9e6b773b0f07e05, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+--- !u!1 &1495097622
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 1495097623}
+  - 212: {fileID: 1495097626}
+  - 68: {fileID: 1495097625}
+  - 114: {fileID: 1495097624}
+  m_Layer: 13
+  m_Name: cloud1
+  m_TagString: MeditativeBG
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 4294967295
+  m_IsActive: 1
+--- !u!4 &1495097623
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1495097622}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -20.7747498, y: -.417537928, z: 0}
+  m_LocalScale: {x: .235260993, y: .235260993, z: 1}
+  m_Children: []
+  m_Father: {fileID: 570682889}
+  m_RootOrder: 0
+--- !u!114 &1495097624
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1495097622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d846b52db78a2408d91402191e495527, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!68 &1495097625
+EdgeCollider2D:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1495097622}
+  m_Enabled: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Points:
+  - {x: -3.47277164, y: 2.10073209}
+  - {x: 3.53861499, y: 2.11699796}
+--- !u!212 &1495097626
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1495097622}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -4056,7 +4136,7 @@ GameObject:
   - 212: {fileID: 1727713113}
   - 68: {fileID: 1727713112}
   - 114: {fileID: 1727713111}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: cloud1
   m_TagString: MeditativeBG
   m_Icon: {fileID: 0}
@@ -4119,7 +4199,7 @@ Transform:
   m_LocalScale: {x: .235260993, y: .235260993, z: 1}
   m_Children: []
   m_Father: {fileID: 570682889}
-  m_RootOrder: 13
+  m_RootOrder: 14
 --- !u!1 &1767811865
 GameObject:
   m_ObjectHideFlags: 0
@@ -4199,7 +4279,7 @@ GameObject:
   - 4: {fileID: 1786435771}
   - 68: {fileID: 1786435772}
   - 114: {fileID: 1786435773}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4252,7 +4332,7 @@ GameObject:
   - 212: {fileID: 1811429246}
   - 68: {fileID: 1811429245}
   - 114: {fileID: 1811429244}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: cloud1
   m_TagString: MeditativeBG
   m_Icon: {fileID: 0}
@@ -4270,7 +4350,7 @@ Transform:
   m_LocalScale: {x: .235260993, y: .235260993, z: 1}
   m_Children: []
   m_Father: {fileID: 570682889}
-  m_RootOrder: 3
+  m_RootOrder: 4
 --- !u!114 &1811429244
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4327,7 +4407,7 @@ GameObject:
   - 212: {fileID: 1869626301}
   - 68: {fileID: 1869626300}
   - 114: {fileID: 1869626299}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: cloud1
   m_TagString: MeditativeBG
   m_Icon: {fileID: 0}
@@ -4345,7 +4425,7 @@ Transform:
   m_LocalScale: {x: .235260993, y: .235260993, z: 1}
   m_Children: []
   m_Father: {fileID: 570682889}
-  m_RootOrder: 14
+  m_RootOrder: 15
 --- !u!114 &1869626299
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4518,7 +4598,7 @@ GameObject:
   - 212: {fileID: 1996093412}
   - 68: {fileID: 1996093411}
   - 114: {fileID: 1996093414}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: cloud1
   m_TagString: MeditativeBG
   m_Icon: {fileID: 0}
@@ -4570,7 +4650,7 @@ Transform:
   m_LocalScale: {x: .235261351, y: .235260874, z: 1}
   m_Children: []
   m_Father: {fileID: 570682889}
-  m_RootOrder: 1
+  m_RootOrder: 2
 --- !u!114 &1996093414
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4685,7 +4765,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 2086002685}
   - 68: {fileID: 2086002686}
-  m_Layer: 13
+  m_Layer: 14
   m_Name: GameObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4754,7 +4834,7 @@ GameObject:
   - 212: {fileID: 2124528015}
   - 68: {fileID: 2124528014}
   - 114: {fileID: 2124528013}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: cloud1
   m_TagString: MeditativeBG
   m_Icon: {fileID: 0}
@@ -4772,7 +4852,7 @@ Transform:
   m_LocalScale: {x: .235260993, y: .235260993, z: 1}
   m_Children: []
   m_Father: {fileID: 570682889}
-  m_RootOrder: 9
+  m_RootOrder: 10
 --- !u!114 &2124528013
 MonoBehaviour:
   m_ObjectHideFlags: 0

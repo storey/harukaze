@@ -20,11 +20,20 @@ private var groundChecker : Transform;
 private var walled: boolean;
 private var onWallChecker : Transform;
 
+// is the player on a platform? (they will also be grounded)
+private var platformed : boolean = false;
+
+// holds the platform on which the user currently is stationed.
+private var currentPlatform : GameObject = null;
+
 // is the player crouching?
 private var crouching : boolean = false;
 
 // is the player near a ladder?
 private var laddered : boolean = false;
+
+// is the player hanging off a ledge?
+private var hanging : boolean = false;
 
 // is the player in the state right after having taken damage?
 private var damageState : boolean = false;
@@ -41,11 +50,15 @@ private var wallJumping: boolean;
 // maximum speed at which the character can move
 var maxSpeed : float = 7.5;
 
+// the speed at which the character starts jumps
+var jumpSpeed : float = 16.0;
+
 // climb speed
 var climbSpeed : float = 4.0;
 
-// controls how strongly/high the character jumps
-var jumpForce : float = 1000.0;
+// store the layer number of the Ground/Platform Layers
+var groundLayer : int = 12;
+var platformLayer : int = 13;
 
 private var rb : Rigidbody2D;
 
@@ -86,6 +99,8 @@ function Update ()
 { 
     if (!meditativeScript.inMedState)
     {
+        currentPlatform = null;
+        
         // allow the user to interact with objects in front of them
         if (Input.GetKeyUp(KeyCode.E))
         {
@@ -112,7 +127,29 @@ function Update ()
         {
             // groundChecker is point just below the characters feet. We draw a line from the character to this point,
             // and check if the line intersects anything on the "ground" layer. If so, the player is "grounded".
-            grounded = Physics2D.Linecast(transform.position, groundChecker.position, (1 << LayerMask.NameToLayer("Ground")));
+            grounded = false;
+            platformed = false;
+            var RH2Ds : RaycastHit2D[] = Physics2D.LinecastAll(transform.position, groundChecker.position);
+            for (var i : int; i < RH2Ds.length; i++)
+            {
+                var RH2D : RaycastHit2D = RH2Ds[i];
+                if (RH2D.collider != null)
+                {
+                    var layer : int = RH2D.collider.gameObject.layer;
+                    if (layer == groundLayer)
+                    {
+                        grounded = true;
+                        break;
+                    }
+                    else if (layer == platformLayer)
+                    {
+                        currentPlatform = RH2D.collider.gameObject;
+                        platformed = true;
+                        grounded = true;
+                        break;
+                    }
+                }
+            }
             anim.SetBool("Grounded", grounded);
             
             // if the character has returned to the ground after wall jumping, give them movement control again
@@ -162,7 +199,25 @@ function FixedUpdate()
     {
         rb.velocity = Vector2(0,0);
     }
-    else if (!wallJumping && !crouching) 
+    else if (hanging)
+    {
+        if (Input.GetKeyUp(KeyCode.W))
+        {
+            rb.velocity = Vector2(0, climbSpeed);
+        }
+        else if (Input.GetKeyUp(KeyCode.S))
+        {
+            hanging = false;
+            rb.gravityScale = 1;
+        }
+        
+    }
+    else if (platformed && Input.GetKeyDown(KeyCode.S))
+    {
+        var platformScript : platformBehavior = currentPlatform.GetComponent(platformBehavior);
+        platformScript.fallThrough();
+    }
+    else if (!wallJumping && !crouching && !hanging) 
     {
         var xVel : float = input * maxSpeed;
         var yVel : float = rb.velocity.y;
@@ -224,7 +279,7 @@ function FixedUpdate()
     }
     else if (jump)
     { 
-        rb.AddForce(Vector2.up * jumpForce);
+        rb.velocity = Vector2(rb.velocity.x, jumpSpeed);
         wallJump = false;
         jump = false;
     }
@@ -282,4 +337,23 @@ function offLadder()
 {
     rb.gravityScale = 1;
     laddered = false;
+}
+
+// call when the player is hanging off a platform
+function beginHang()
+{
+    rb.gravityScale = 0;
+    rb.velocity = Vector2(0,0);
+    hanging = true;
+}
+
+// call when the player finishes climbing from the hanging state
+function endClimbFromHang()
+{
+    if (hanging)
+    {
+        rb.gravityScale = 1;
+        rb.velocity = Vector2(0,0);
+        hanging = false;
+    }
 }
