@@ -153,15 +153,8 @@ function startRotation(Element : int)
     results[currentSelection] = Element;
 
     currentSelection++;
-    if (currentSelection < 5)
-    {
-        rotating = true;
-        StartCoroutine(rotateCircle());
-    }
-    else
-    {
-        meditativeScript.leaveState();
-    }
+    rotating = true;
+    StartCoroutine(rotateCircle());
 }
 
 // rotate the circle the proper amount
@@ -178,4 +171,8 @@ function rotateCircle()
         enzo4.Rotate(Vector3.back * stepDegree);
     }
     rotating = false;
+    if (currentSelection >= 5)
+    {
+        meditativeScript.leaveState();
+    }
 }

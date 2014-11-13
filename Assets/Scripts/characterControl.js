@@ -5,7 +5,6 @@ var facingRight = true;
 
 @HideInInspector
 var jump = false;
-@HideInInspector
 var wallJump = false;
 
 @HideInInspector
@@ -21,6 +20,15 @@ private var groundChecker : Transform;
 private var walled: boolean;
 private var onWallChecker : Transform;
 
+// is the player crouching?
+private var crouching : boolean = false;
+
+// is the player near a ladder?
+private var laddered : boolean = false;
+
+// is the player in the state right after having taken damage?
+private var damageState : boolean = false;
+
 // used to check wether the character has just jumped off the wall
 // allows infinite jumping up one wall
 /*
@@ -31,10 +39,13 @@ private var wallJumpingChecker : Transform;
 private var wallJumping: boolean;
 
 // maximum speed at which the character can move
-var maxSpeed = 7.5;
+var maxSpeed : float = 7.5;
+
+// climb speed
+var climbSpeed : float = 4.0;
 
 // controls how strongly/high the character jumps
-var jumpForce = 1000.0;
+var jumpForce : float = 1000.0;
 
 private var rb : Rigidbody2D;
 
@@ -75,14 +86,27 @@ function Update ()
 { 
     if (!meditativeScript.inMedState)
     {
+        // allow the user to interact with objects in front of them
+        if (Input.GetKeyUp(KeyCode.E))
+        {
+            var rc2D : RaycastHit2D = Physics2D.Linecast(transform.position, onWallChecker.position, (1 << LayerMask.NameToLayer("Interact")));
+            var script : interactionScript = rc2D.transform.gameObject.GetComponent("interactionScript");
+            script.Interact();
+        }
+        
         // onWallChecker is point just in front of the character. We draw a line from the character to this point,
         // and check if the line intersects anything on the "wall" layer. If so, the player is "walled".
         walled = Physics2D.Linecast(transform.position, onWallChecker.position, (1 << LayerMask.NameToLayer("Wall")));
-               
-        // wallJumpingChecker is point behind the character. We draw a line from the character to this point,
-        // and check if the line intersects anything on the "wall" layer. If so, the player has just wall jumped.
-        // allows infinite jumping up one wall
-        //wallJumping = Physics2D.Linecast(transform.position, wallJumpingChecker.position, (1 << LayerMask.NameToLayer("Wall")));
+        
+        // similarly, check if the user is against a ladder
+        if (!walled)
+        {
+            laddered = Physics2D.Linecast(transform.position, onWallChecker.position, (1 << LayerMask.NameToLayer("Ladder")));
+        }
+        else
+        {
+            laddered = false;
+        }
         
         
         // if the jump button is pressed and the player is walled, wall jump
@@ -97,19 +121,37 @@ function Update ()
             // groundChecker is point just below the characters feet. We draw a line from the character to this point,
             // and check if the line intersects anything on the "ground" layer. If so, the player is "grounded".
             grounded = Physics2D.Linecast(transform.position, groundChecker.position, (1 << LayerMask.NameToLayer("Ground")));
+            anim.SetBool("Grounded", grounded);
             
             // if the character has returned to the ground after wall jumping, give them movement control again
             if (wallJumping && (grounded || (rb.velocity.y == 0)))
             {
                 wallJumping = false;
             }
+            
         
-            // if the jump button is pressed and the player is grounded, jump
-            if(Input.GetButtonDown("Jump") && grounded)
+            // if the jump button is pressed and the player is grounded and not crouching, jump
+            if (Input.GetButtonDown("Jump") && grounded && !crouching)
             {
                 jump = true;
+                damageState = false;
+            }
+            
+            
+            // if the crouching button is pressed and the player is grounded, (and the player isn't jumping), crouch
+            if (Input.GetKeyDown(KeyCode.S) && grounded && !jump && !walled && !wallJumping)
+            {
+                crouching = true;
+                anim.SetBool("Crouching", true);
+            }
+            if (Input.GetKeyUp(KeyCode.S) && crouching)
+            {
+                crouching = false;
+                anim.SetBool("Crouching", false);
             }
         }
+        anim.SetFloat("HorizontalSpeed", Mathf.Abs(rb.velocity.x));
+        anim.SetFloat("VerticalSpeed", rb.velocity.y);
     }
 }
 
@@ -119,22 +161,45 @@ function FixedUpdate()
     // get user input in horizontal direction
     var input = Input.GetAxis("Horizontal");
     
-    if (walled && ((input > 0 && facingRight) || (input < 0 && !facingRight)))
+    if (damageState && (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D)))
+    {
+        cancelDamageState();
+    }
+    
+    if (crouching || (walled && ((input > 0 && facingRight) || (input < 0 && !facingRight))))
     {
         rb.velocity = Vector2(0,0);
-        anim.SetFloat("Speed", 0);
     }
-    else if (!wallJumping) 
+    else if (!wallJumping && !crouching) 
     {
-        anim.SetFloat("Speed", Mathf.Abs(input));
         var xVel : float = input * maxSpeed;
-        if(input == 0)
+        var yVel : float = rb.velocity.y;
+        if(damageState || input == 0)
         {
             xVel = rb.velocity.x;
         }
         
+        
+        if (laddered)
+        {
+            rb.gravityScale = 0;
+            yVel = 0;
+            if(Input.GetKey(KeyCode.W))
+            {
+                yVel = climbSpeed;
+            }
+            else if(Input.GetKey(KeyCode.S))
+            {
+                yVel = -1*climbSpeed;
+            }
+        }
+        else
+        {
+            rb.gravityScale = 1;
+        }
+        
         // set X velocity based on the user input
-        rb.velocity = Vector2(xVel, rb.velocity.y);
+        rb.velocity = Vector2(xVel, yVel);
 
         // if the character is facing left and moving right, set them to moving left
         if (input > 0 && !facingRight)
@@ -191,4 +256,29 @@ function FlipPlayer()
     var myScale = transform.localScale;
     myScale.x *= -1;
     transform.localScale = myScale;
+}
+
+// handles the character daking damage
+function damaged(delay : float)
+{
+    StopCoroutine("damageWait");
+    damageState = true;
+    StartCoroutine("damageWait", Mathf.Floor(delay/Time.fixedDeltaTime));
+}
+
+// wait a certain amount of time before allowing movement
+function damageWait(numFrames : int)
+{
+    for (var i : int = 0; i < numFrames; i++)
+    {
+        yield WaitForFixedUpdate;
+    }
+    damageState = false;
+}
+
+// cancel the damage state
+function cancelDamageState()
+{
+    damageState = false;
+    StopCoroutine("damageWait");
 }
