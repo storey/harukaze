@@ -23,8 +23,11 @@ private var onWallChecker : Transform;
 // is the player on a platform? (they will also be grounded)
 private var platformed : boolean = false;
 
-// holds the platform on which the user currently is stationed.
+// holds the platform which the player is currently standing on or hanging from.
 private var currentPlatform : GameObject = null;
+
+// holds the y position of the platform if the player is hanging from it
+private var currentPlatformY : float;
 
 // is the player crouching?
 private var crouching : boolean = false;
@@ -60,6 +63,9 @@ var climbSpeed : float = 4.0;
 var groundLayer : int = 12;
 var platformLayer : int = 13;
 
+// store the player's height
+private var playerHeight : float;
+
 private var rb : Rigidbody2D;
 
 private var anim : Animator;
@@ -70,6 +76,9 @@ private var root2Over2 : float;
 // holds the meditative state script to figure out whether we are in the meditative state.
 private var meditativeScript : MeditativeStateController;
 
+// holds the control script of the camera that follows the player
+private var cameraScript : cameraControl;
+
 function Awake()
 {
     // get the offset and radius of the circle collider (used by angled platforms)
@@ -77,6 +86,12 @@ function Awake()
     circleColliderRadius = GetComponent(CircleCollider2D).radius;
     
     root2Over2 = Mathf.Sqrt(2)/2.0;
+    
+    var characterSprite : Sprite = GetComponent(SpriteRenderer).sprite;
+    playerHeight = characterSprite.bounds.max.y - characterSprite.bounds.min.y;
+    
+    
+    cameraScript = GameObject.Find("Main Camera").GetComponent(cameraControl);
 }
 
 function Start () 
@@ -99,7 +114,17 @@ function Update ()
 { 
     if (!meditativeScript.inMedState)
     {
-        currentPlatform = null;
+        if (hanging)
+        {
+            if (transform.position.y > currentPlatformY)
+            {
+                endClimbFromHang();
+            }
+        }
+        else
+        {
+            //currentPlatform = null;
+        }
         
         // allow the user to interact with objects in front of them
         if (Input.GetKeyUp(KeyCode.E))
@@ -127,6 +152,8 @@ function Update ()
         {
             // groundChecker is point just below the characters feet. We draw a line from the character to this point,
             // and check if the line intersects anything on the "ground" layer. If so, the player is "grounded".
+            
+            
             grounded = false;
             platformed = false;
             var RH2Ds : RaycastHit2D[] = Physics2D.LinecastAll(transform.position, groundChecker.position);
@@ -151,6 +178,8 @@ function Update ()
                 }
             }
             anim.SetBool("Grounded", grounded);
+            
+            
             
             // if the character has returned to the ground after wall jumping, give them movement control again
             if (wallJumping && (grounded || (rb.velocity.y == 0)))
@@ -187,6 +216,7 @@ function Update ()
 // handle physics updates
 function FixedUpdate()
 {
+            
     // get user input in horizontal direction
     var input = Input.GetAxis("Horizontal");
     
@@ -340,11 +370,18 @@ function offLadder()
 }
 
 // call when the player is hanging off a platform
-function beginHang()
+function beginHang(platform : GameObject, platformY : float)
 {
+    var extraDistance : float = 0.05;
+    hanging = true;
     rb.gravityScale = 0;
     rb.velocity = Vector2(0,0);
-    hanging = true;
+    
+    currentPlatform = platform;
+    currentPlatformY = platformY;
+    /*
+    transform.position.y = currentPlatformY - (playerHeight + extraDistance);
+    cameraScript.setY(currentPlatformY - (playerHeight + extraDistance));*/
 }
 
 // call when the player finishes climbing from the hanging state
@@ -357,3 +394,30 @@ function endClimbFromHang()
         hanging = false;
     }
 }
+
+/*
+function OnTriggerEnter2D(other : Collider2D) 
+{
+    Debug.Log("in"+Time.realtimeSinceStartup);
+    var layer : int = other.gameObject.layer;
+    if (layer == groundLayer)
+    {
+        grounded = true;
+    }
+    else if (layer == platformLayer)
+    {
+        currentPlatform = other.gameObject;
+        platformed = true;
+        grounded = true;
+    }
+    anim.SetBool("Grounded", grounded);
+}
+
+function OnTriggerExit2D(other : Collider2D) 
+{
+    Debug.Log("out"+Time.realtimeSinceStartup);
+    grounded = false;
+    platformed = false;
+    currentPlatform = null;
+    anim.SetBool("Grounded", grounded);
+}*/

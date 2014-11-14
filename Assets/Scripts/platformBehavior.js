@@ -20,7 +20,7 @@ private var fallingThrough : boolean = false;
 function Start () 
 { 
     charScript = GameObject.Find("Masaru").GetComponent(characterControl);
-    halfYSize = (-1*charScript.circleColliderYOffset + charScript.circleColliderRadius) * GameObject.Find("Masaru").GetComponent(Transform).localScale.y;
+    halfYSize = 0;// (-1*charScript.circleColliderYOffset + charScript.circleColliderRadius) * GameObject.Find("Masaru").GetComponent(Transform).localScale.y;
     
     myCollider = GetComponent(EdgeCollider2D);
     myCollider.isTrigger = true;
@@ -60,10 +60,10 @@ function FixedUpdate()
 
 function OnTriggerExit2D(other : Collider2D)
 {
-    if((other.sharedMaterial.name).Equals("PlayerMaterial") && other.attachedRigidbody.velocity.y <= 0)
+    if((other.sharedMaterial.name).Equals("PlayerHangMaterial") && other.attachedRigidbody.velocity.y <= 0)
     {
         fallingThrough = false;
-        charScript.beginHang();
+        charScript.beginHang(gameObject, myY);
     }
     else if((other.sharedMaterial.name).Equals("PlayerFeetMaterial")  && other.attachedRigidbody.velocity.y > 0)
     {

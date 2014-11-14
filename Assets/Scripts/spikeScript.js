@@ -2,18 +2,18 @@
 
 var damageDelay : float = 1.0;
 
-private var myCamera : Transform;
 
 private var healthScript : healthControl;
 private var charScript : characterControl;
+private var cameraScript : cameraControl;
 
 private var distance : int = -2;
 
 function Start () 
 {
-    myCamera = GameObject.Find("Main Camera").GetComponent(Transform);
     healthScript = GameObject.Find("HealthController").GetComponent(healthControl);
     charScript = GameObject.Find("Masaru").GetComponent(characterControl);
+    cameraScript = GameObject.Find("Main Camera").GetComponent(cameraControl);
     
 }
 
@@ -22,7 +22,7 @@ function OnCollisionEnter2D(other : Collision2D)
 {
     other.rigidbody.velocity.x = 0;
     other.transform.position.x += distance;
-    myCamera.position.x += distance;
+    cameraScript.addPos(distance, 0);
 
     healthScript.takeHealth(1);
     charScript.damaged(damageDelay);

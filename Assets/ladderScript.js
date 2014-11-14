@@ -11,11 +11,18 @@ function Start ()
 // when the user touches the ladder, act appropriately
 function OnCollisionEnter2D(other : Collision2D) 
 {
-    charScript.ontoLadder();
+    if((other.collider.sharedMaterial.name).Equals("PlayerMaterial"))
+    {
+        charScript.ontoLadder();
+    }
+    
 }
 
 // when the user leaves the ladder, act appropriately
 function OnCollisionExit2D(other : Collision2D) 
 {
-    charScript.offLadder();
+    if((other.collider.sharedMaterial.name).Equals("PlayerMaterial"))
+    {
+        charScript.offLadder();
+    }
 }

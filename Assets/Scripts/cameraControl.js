@@ -67,3 +67,53 @@ function TrackPlayer ()
     // Set the camera's position to the target position with the same z component.
     transform.position = new Vector3(targetX, targetY, transform.position.z);
 }
+
+// sets the camera position to newX, newY
+function setPos(newX : float, newY : float)
+{
+    // By default the target x and y coordinates of the camera are it's current x and y coordinates.
+    var targetX : float = newX;
+    var targetY : float = newY;
+    // The target x and y coordinates should not be larger than the maximum or smaller than the minimum.
+    targetX = Mathf.Clamp(targetX, minXAndY.x, maxXAndY.x);
+    targetY = Mathf.Clamp(targetY, minXAndY.y, maxXAndY.y);
+    // Set the camera's position to the target position with the same z component.
+    transform.position = new Vector3(targetX, targetY, transform.position.z);
+}
+
+// sets the x position of the camera to newX
+function setX(newX : float)
+{
+    // By default the target x and y coordinates of the camera are it's current x and y coordinates.
+    var targetX : float = newX;
+    var targetY : float = transform.position.y;
+    // The target x coordinate should not be larger than the maximum or smaller than the minimum.
+    targetX = Mathf.Clamp(targetX, minXAndY.x, maxXAndY.x);
+    // Set the camera's position to the target position with the same z component.
+    transform.position = new Vector3(targetX, targetY, transform.position.z);
+}
+
+// sets the y position of the camera to newY
+function setY(newY : float)
+{
+    // By default the target x and y coordinates of the camera are it's current x and y coordinates.
+    var targetX : float = transform.position.x;
+    var targetY : float = newY;
+    // The target y coordinate should not be larger than the maximum or smaller than the minimum.
+    targetY = Mathf.Clamp(targetY, minXAndY.y, maxXAndY.y);
+    // Set the camera's position to the target position with the same z component.
+    transform.position = new Vector3(targetX, targetY, transform.position.z);
+}
+
+// shifts the camera deltaX in the x directino, deltaY in the y direction.
+function addPos(deltaX : float, deltaY : float)
+{
+    // By default the target x and y coordinates of the camera are it's current x and y coordinates.
+    var targetX : float = transform.position.x + deltaX;
+    var targetY : float = transform.position.y + deltaY;
+    // The target x and y coordinates should not be larger than the maximum or smaller than the minimum.
+    targetX = Mathf.Clamp(targetX, minXAndY.x, maxXAndY.x);
+    targetY = Mathf.Clamp(targetY, minXAndY.y, maxXAndY.y);
+    // Set the camera's position to the target position with the same z component.
+    transform.position = new Vector3(targetX, targetY, transform.position.z);
+}
