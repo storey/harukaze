@@ -153,7 +153,7 @@ function Update ()
             // groundChecker is point just below the characters feet. We draw a line from the character to this point,
             // and check if the line intersects anything on the "ground" layer. If so, the player is "grounded".
             
-            
+            /*
             grounded = false;
             platformed = false;
             var RH2Ds : RaycastHit2D[] = Physics2D.LinecastAll(transform.position, groundChecker.position);
@@ -178,7 +178,7 @@ function Update ()
                 }
             }
             anim.SetBool("Grounded", grounded);
-            
+            */
             
             
             // if the character has returned to the ground after wall jumping, give them movement control again
@@ -379,9 +379,9 @@ function beginHang(platform : GameObject, platformY : float)
     
     currentPlatform = platform;
     currentPlatformY = platformY;
-    /*
+    
     transform.position.y = currentPlatformY - (playerHeight + extraDistance);
-    cameraScript.setY(currentPlatformY - (playerHeight + extraDistance));*/
+    cameraScript.setY(currentPlatformY - (playerHeight + extraDistance));
 }
 
 // call when the player finishes climbing from the hanging state
@@ -393,6 +393,55 @@ function endClimbFromHang()
         rb.velocity = Vector2(0,0);
         hanging = false;
     }
+}
+
+// when any collider collides
+function OnCollisionEnter2D(coll : Collision2D)
+{
+    checkGrounded(coll);
+}
+
+function OnCollisionStay2D(coll : Collision2D)
+{
+    if (!grounded)
+    {
+        checkGrounded(coll);
+    }
+}
+
+// check if the player is grounded given a Collision2D
+function checkGrounded(coll : Collision2D)
+{
+    var contacts : ContactPoint2D[] = coll.contacts;
+    var below : float = transform.position.y + 0.23;
+    for (var i : int; i < contacts.length; i++)
+    {
+        if(contacts[i].point.y < below)
+        {
+            var layer : int = contacts[i].collider.gameObject.layer;
+            if (layer == groundLayer)
+            {
+                grounded = true;
+                anim.SetBool("Grounded", grounded);
+                break;
+            }
+            else if (layer == platformLayer)
+            {
+                currentPlatform = contacts[i].collider.gameObject;
+                platformed = true;
+                grounded = true;
+                anim.SetBool("Grounded", grounded);
+                break;
+            }
+        }
+    }
+}
+
+function OnCollisionExit2D()
+{
+    grounded = false;
+    platformed = false;
+    anim.SetBool("Grounded", grounded);
 }
 
 /*

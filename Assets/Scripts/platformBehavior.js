@@ -67,6 +67,7 @@ function OnTriggerExit2D(other : Collider2D)
     }
     else if((other.sharedMaterial.name).Equals("PlayerFeetMaterial")  && other.attachedRigidbody.velocity.y > 0)
     {
+        myCollider.isTrigger = false;
         charScript.endClimbFromHang();
     }
 }

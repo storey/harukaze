@@ -16,7 +16,7 @@ private var player : Transform;		// Reference to the player's transform.
 function Awake()
 {
     // Setting up the reference.
-    player = GameObject.FindWithTag("Player").transform;
+    player = GameObject.Find("Masaru").transform; //GameObject.FindWithTag("Player").transform;
 }
 
 
