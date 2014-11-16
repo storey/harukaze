@@ -1,5 +1,7 @@
 ﻿#pragma strict
 
+// controls the player's health bar
+
 // holds the full peach, half peach, and pit prefabs
 var fullPeach : Transform;
 var halfPeach : Transform;
@@ -26,6 +28,7 @@ private var currentHealth : int;
 // holds each peach/halfPeach/pit gameObject
 private var peaches : Transform[];
 
+// this object's transform
 private var health : Transform;
 
 // health on a row
@@ -41,14 +44,22 @@ var pitHeightBoost : float = -6;
 // holds how much time between increments/decrements when adding/subtracting a large amount of health
 var multipleSpeed : float = 0.1;
 
+// setup
 function Start () 
 {
+    // get the width/height of peach sprites
     var pixelsToUnits : float = 100;
     var peachSpriteW : float = 716.0/pixelsToUnits;
     var peachSpriteH : float = 755.0/pixelsToUnits;
     peachWidth = peachSpriteW * fullPeach.localScale.x;
     peachHeight = peachSpriteH * fullPeach.localScale.y;
+    
+    // get the health tranform
     health  = GameObject.Find("HealthController").transform;
+    
+    
+    
+    // add the proper number of peaches up to full health
     var peach : Transform;
     
     halfPeachHeightBoost *= halfPeach.localScale.y;
@@ -85,7 +96,7 @@ function Start ()
     peaches[(i-1)*peachesPerRow + j] = peach;
     
                               
-                              
+    // set teh current health to the max health
     currentHealth = maxHealth;
 
 }
@@ -191,6 +202,7 @@ function takeHealth(N : int)
     }
 }
 
+// each frame (used for testing)
 function Update () 
 {
     /* For testing 

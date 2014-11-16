@@ -1,12 +1,16 @@
 ﻿#pragma strict
+// this controls the characters movement
 
+// is the player facing right?
 @HideInInspector
 var facingRight = true;
 
+// does the player want to start a jump or wall jump?
 @HideInInspector
 var jump = false;
 var wallJump = false;
 
+// what is the offset and radius of the circle collider
 @HideInInspector
 var circleColliderYOffset : float;
 @HideInInspector
@@ -23,6 +27,9 @@ private var onWallChecker : Transform;
 // is the player on a platform? (they will also be grounded)
 private var platformed : boolean = false;
 
+// is the player hanging off a ledge?
+private var hanging : boolean = false;
+
 // holds the platform which the player is currently standing on or hanging from.
 private var currentPlatform : GameObject = null;
 
@@ -32,25 +39,16 @@ private var currentPlatformY : float;
 // is the player crouching?
 private var crouching : boolean = false;
 
-// is the player near a ladder?
+// is the player on a ladder
 private var laddered : boolean = false;
-
-// is the player hanging off a ledge?
-private var hanging : boolean = false;
 
 // is the player in the state right after having taken damage?
 private var damageState : boolean = false;
 
-// used to check wether the character has just jumped off the wall
-// allows infinite jumping up one wall
-/*
-private var wallJumping: boolean;
-private var wallJumpingChecker : Transform;
-*/
 // holds wether the user is wall Jumping or not.
 private var wallJumping: boolean;
 
-// maximum speed at which the character can move
+// maximum speed at which the character can move horizontally
 var maxSpeed : float = 7.5;
 
 // the speed at which the character starts jumps
@@ -66,12 +64,9 @@ var platformLayer : int = 13;
 // store the player's height
 private var playerHeight : float;
 
+// holds the player's rigid body and animator
 private var rb : Rigidbody2D;
-
 private var anim : Animator;
-
-// stores sqrt(2)/2
-private var root2Over2 : float;
 
 // holds the meditative state script to figure out whether we are in the meditative state.
 private var meditativeScript : MeditativeStateController;
@@ -85,35 +80,32 @@ function Awake()
     circleColliderYOffset = GetComponent(CircleCollider2D).center.y;
     circleColliderRadius = GetComponent(CircleCollider2D).radius;
     
-    root2Over2 = Mathf.Sqrt(2)/2.0;
-    
+    // get the character sprite and player height
     var characterSprite : Sprite = GetComponent(SpriteRenderer).sprite;
     playerHeight = characterSprite.bounds.max.y - characterSprite.bounds.min.y;
     
-    
+    // get the camera script
     cameraScript = GameObject.Find("Main Camera").GetComponent(cameraControl);
+    // get the meditative state script
+    meditativeScript = GameObject.Find("MeditativeStateManager").GetComponent(MeditativeStateController);
 }
 
 function Start () 
 {
-    // get the meditative state script
-    meditativeScript = GameObject.Find("MeditativeStateManager").GetComponent(MeditativeStateController);
-    
-    
     // get the rigid body for the character
     rb = GetComponent(Rigidbody2D);
     anim = GetComponent(Animator);
     groundChecker = transform.Find("groundChecker");
     onWallChecker = transform.Find("onWallChecker");
     wallJumping = false;
-    // allows infinite jumping up one wall
-    //wallJumpingChecker = transform.Find("wallJumpChecker");
 }
 
 function Update () 
 { 
+    // make sure we aren't in the meditative state, which would mean everything shoudl be frozen
     if (!meditativeScript.inMedState)
     {
+        // if the user is hanging and are above the platform, end the hanging
         if (hanging)
         {
             if (transform.position.y > currentPlatformY)
@@ -152,6 +144,7 @@ function Update ()
         {
             // groundChecker is point just below the characters feet. We draw a line from the character to this point,
             // and check if the line intersects anything on the "ground" layer. If so, the player is "grounded".
+            // currently replaced because the one point is too easy, but I'll leave it here for now
             
             /*
             grounded = false;
@@ -208,6 +201,8 @@ function Update ()
                 anim.SetBool("Crouching", false);
             }
         }
+        
+        // set the user's horizontal and vertical speed appropriately in the animator
         anim.SetFloat("HorizontalSpeed", Mathf.Abs(rb.velocity.x));
         anim.SetFloat("VerticalSpeed", rb.velocity.y);
     }
@@ -220,15 +215,19 @@ function FixedUpdate()
     // get user input in horizontal direction
     var input = Input.GetAxis("Horizontal");
     
+    // if the user is in the damage state and they press a movement key,
+    // cancel the damage state
     if (damageState && (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D)))
     {
         cancelDamageState();
     }
     
+    // if the user is crouching or clinging to a wall, set their velocity to zero
     if (crouching || (walled && ((input > 0 && facingRight) || (input < 0 && !facingRight))))
     {
         rb.velocity = Vector2(0,0);
     }
+    // if the user is hanging, allow them to climb onto or drop from the platform
     else if (hanging)
     {
         if (Input.GetKeyUp(KeyCode.W))
@@ -237,26 +236,35 @@ function FixedUpdate()
         }
         else if (Input.GetKeyUp(KeyCode.S))
         {
+            Debug.Log("down:"+Time.realtimeSinceStartup);
             hanging = false;
             rb.gravityScale = 1;
         }
         
     }
+    // if the user is on a platform, allow them to drop to the hanging position.
     else if (platformed && Input.GetKeyDown(KeyCode.S))
     {
         var platformScript : platformBehavior = currentPlatform.GetComponent(platformBehavior);
         platformScript.fallThrough();
     }
+    // otherwise if they aren't wall jumping or crouching or hanging
     else if (!wallJumping && !crouching && !hanging) 
     {
+        // set their x velocity to the input and leave the y velocity the same
         var xVel : float = input * maxSpeed;
         var yVel : float = rb.velocity.y;
+        
+        // if the user is in the damage state or there is no input,
+        // leave the x velocity alone
         if(damageState || input == 0)
         {
             xVel = rb.velocity.x;
         }
         
-        
+        // if the user is on a ladder, set their y velocity to 0 unless
+        // they are trying to move up or down, in which case set it ot the
+        // climb speed in the proper direction
         if (laddered)
         {
             yVel = 0;
@@ -270,7 +278,7 @@ function FixedUpdate()
             }
         }
         
-        // set X velocity based on the user input
+        // set teh velocity
         rb.velocity = Vector2(xVel, yVel);
 
         // if the character is facing left and moving right, set them to moving left
@@ -284,17 +292,9 @@ function FixedUpdate()
             FlipPlayer();
         }
     }
+    // if the user wants to wall jump, wall jump
     if (wallJump)
     {
-        /*
-        var sideForce : float = root2Over2 * jumpForce /2.0;
-        if (facingRight)
-        {
-            sideForce *= -1.0;
-        }
-        var upForce : float = root2Over2 * jumpForce * 2.0;
-        FlipPlayer();
-        rb.AddForce(Vector2(sideForce, upForce));*/
         var sideSpeed : float = maxSpeed;
         if (facingRight)
         {
@@ -307,6 +307,7 @@ function FixedUpdate()
         wallJump = false;
         jump = false;
     }
+    // if the user wants to jump, jump
     else if (jump)
     { 
         rb.velocity = Vector2(rb.velocity.x, jumpSpeed);
@@ -330,7 +331,7 @@ function FlipPlayer()
     transform.localScale = myScale;
 }
 
-// handles the character daking damage
+// handles the character taking damage
 function damaged(delay : float)
 {
     StopCoroutine("damageWait");
@@ -338,7 +339,8 @@ function damaged(delay : float)
     StartCoroutine("damageWait", Mathf.Floor(delay/Time.fixedDeltaTime));
 }
 
-// wait a certain amount of time before allowing movement
+// wait a certain amount of time before allowing movement after they take
+// damage
 function damageWait(numFrames : int)
 {
     for (var i : int = 0; i < numFrames; i++)
@@ -374,6 +376,12 @@ function beginHang(platform : GameObject, platformY : float)
 {
     var extraDistance : float = 0.05;
     hanging = true;
+    
+    grounded = false;
+    anim.SetBool("Grounded", grounded);
+    platformed = false;
+    anim.SetBool("Platformed", platformed);
+    
     rb.gravityScale = 0;
     rb.velocity = Vector2(0,0);
     
@@ -395,12 +403,14 @@ function endClimbFromHang()
     }
 }
 
-// when any collider collides
+// when any collider collides, check whether the user is grounded
 function OnCollisionEnter2D(coll : Collision2D)
 {
     checkGrounded(coll);
 }
 
+// if the user doesn't appear to be grounded but is colliding
+// with something, check whether they are grounded
 function OnCollisionStay2D(coll : Collision2D)
 {
     if (!grounded)
@@ -431,42 +441,18 @@ function checkGrounded(coll : Collision2D)
                 platformed = true;
                 grounded = true;
                 anim.SetBool("Grounded", grounded);
+                anim.SetBool("Platformed", platformed);
                 break;
             }
         }
     }
 }
 
+// when the user leaves a collision, set them to not grounded
 function OnCollisionExit2D()
 {
     grounded = false;
     platformed = false;
     anim.SetBool("Grounded", grounded);
+    anim.SetBool("Platformed", platformed);
 }
-
-/*
-function OnTriggerEnter2D(other : Collider2D) 
-{
-    Debug.Log("in"+Time.realtimeSinceStartup);
-    var layer : int = other.gameObject.layer;
-    if (layer == groundLayer)
-    {
-        grounded = true;
-    }
-    else if (layer == platformLayer)
-    {
-        currentPlatform = other.gameObject;
-        platformed = true;
-        grounded = true;
-    }
-    anim.SetBool("Grounded", grounded);
-}
-
-function OnTriggerExit2D(other : Collider2D) 
-{
-    Debug.Log("out"+Time.realtimeSinceStartup);
-    grounded = false;
-    platformed = false;
-    currentPlatform = null;
-    anim.SetBool("Grounded", grounded);
-}*/

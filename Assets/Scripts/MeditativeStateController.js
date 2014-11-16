@@ -1,24 +1,32 @@
 ﻿#pragma strict
 
+// controls the user entering the meditative state (a paused state where they can activate abilities)
+
+// is the user currently in the meditative state?
+@HideInInspector
 public var inMedState : boolean;
 
-private var baseColor : Color;
-private var medColor : Color;
+// how far the world should slowdown in the meditative state
 private var slowSpeed : float; 
 
+// get the HUD and the various pieces that appear as part of the mediative state
 private var HUD : GameObject;
 private var medView : GameObject;
 
+// get various scripts that this script must interact with
+// the script controlling the selections wheel, timer, and script that makes
+// the pieces of the meditative state follow the user.
 private var wheelScript : meditativeWheel;
 private var timerScript : enzoTimerScript;
 private var followScript : HUDfollow;
 
+// when the function wakes up
 function Awake () 
 {
-    baseColor = Color(1, 1, 1, 1);
-    medColor = Color(232/255.0, 126/255.0, 238/255.0, 1);
+    // set time to be stopped in the meditative state
     slowSpeed = 0.00;
     
+    // get proper gameobjects and scripts
     HUD = GameObject.Find("HUD");
     medView = GameObject.Find("MeditativeState");
     
@@ -26,16 +34,17 @@ function Awake ()
     timerScript = GameObject.Find("EnzoTimer").GetComponent(enzoTimerScript);
     followScript = GameObject.Find("MeditativeState").GetComponent(HUDfollow);
     
+    // setup the necessary scripts, ass they will be immediately disabled
     wheelScript.setup();
     timerScript.setup();
     followScript.setup();
     
+    // disable the various pieces of the meditative state
     medView.SetActive(false);
     
 }
 
-// if the left conrol is down, enter the meditative state by stopping time and
-// changing the color of background sprites.
+// if the left control is down, enter the meditative state
 function Update () 
 {
     if(Input.GetKeyUp(KeyCode.LeftControl))
@@ -56,22 +65,18 @@ function Update ()
 // enter the meditative state
 function enterState()
 {
-    var bgSprites;
-    
+    // stop time
     Time.timeScale = slowSpeed;
         
+    // deactive the HUD and activate the meditative state pieces
     HUD.SetActive(false);
     medView.SetActive(true);
     followScript.updatePosition();
         
+    // reset the element wheel
     wheelScript.resetVars();
         
-    bgSprites = GameObject.FindGameObjectsWithTag("MeditativeBG");
-    for (var bgSprite : GameObject in bgSprites)
-    {
-        bgSprite.GetComponent(SpriteRenderer).color = medColor;
-    }
-    
+    // reset and start the timer
     timerScript.resetTimer();
     timerScript.startTimer();
 }
@@ -79,22 +84,19 @@ function enterState()
 // leave the meditative state
 function leaveState()
 {
+    // stop the timer
     timerScript.stopTimer();
     
+    // exit the meditative state
     inMedState = false;
     
-    var bgSprites;
-    
+    // return time to normal
     Time.timeScale = 1;
         
+    // unhide the HUD and hide the meditative state pieces
     HUD.SetActive(true);
     medView.SetActive(false);
         
-    bgSprites = GameObject.FindGameObjectsWithTag("MeditativeBG");
-    for (var bgSprite : GameObject in bgSprites)
-    {
-        bgSprite.GetComponent(SpriteRenderer).color = baseColor;
-    }
-    
+    // take appropriate action given the state of the wheel.
     wheelScript.finishState();
 }

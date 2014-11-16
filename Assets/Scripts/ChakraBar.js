@@ -1,14 +1,19 @@
 ﻿#pragma strict
 
+// controls the chakra bar
+
+// set the maximum and starting chakra
 public var maxChakra : float = 100.0;
 
 private var currentChakra : float = 50.0;
 
+// properly set the initial chakra
 function Start () 
 {
     renderer.material.SetFloat("_Cutoff", getCutoff());
 }
 
+// run every frame
 function Update () 
 {    
     /* For testing
@@ -30,7 +35,7 @@ function changeChakra(N : float)
     renderer.material.SetFloat("_Cutoff", getCutoff());
 }
 
-// returns the alpha cutoff given the current Chakra and max Chakra
+// returns the proper alpha cutoff for the bar given the current Chakra and max Chakra
 function getCutoff()
 {
     var percentage : float = currentChakra/maxChakra;

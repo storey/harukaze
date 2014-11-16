@@ -1,19 +1,23 @@
 ﻿#pragma strict
+// Controls Angled Platforms. Currently Depricated, and don't allow the user to hang off the platform. May be updated later if necessary.
 
+// the collider for this platform
 private var myCollider : EdgeCollider2D;
 
-private var myY : float;
-
+// the transform for the character
 private var charTransform : Transform;
-
-
+// the script for the character
 private var charScript : characterControl;
 
+// fudge used to make sure user is completely above/below the platform
 private var fudgeFactor : float = 0.1f;
 
+// slope of the platform
 private var mySlope : float;
+// b, where m*x + b = y
 private var myConstant: float;
 
+// offest of the user's circle
 private var circleOffsetY: float;
 
 // calculate a variety of necessary constants to allow quick determination of
@@ -46,12 +50,6 @@ function Start()
 
 
     charTransform = GameObject.Find("Masaru").GetComponent(Transform);
-}
-
-function Update() 
-{
-    
-
 }
 
 // handle physics updates

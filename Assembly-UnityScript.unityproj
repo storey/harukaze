@@ -55,11 +55,11 @@
      <Compile Include="Assets\Scripts\enzoTimerScript.js" />
      <Compile Include="Assets\Scripts\healthControl.js" />
      <Compile Include="Assets\Scripts\interactionScript.js" />
+     <Compile Include="Assets\Scripts\ladderScript.js" />
      <Compile Include="Assets\Scripts\meditativeWheel.js" />
      <Compile Include="Assets\Scripts\platformBehavior.js" />
      <Compile Include="Assets\Scripts\spikeScript.js" />
      <Compile Include="Assets\Scripts\stanceControl.js" />
-     <Compile Include="Assets\ladderScript.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

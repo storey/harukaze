@@ -1,14 +1,13 @@
 ﻿#pragma strict
 
+// this script controls interaction with objects
+
+// the type of object that this is. This will be set in the inspector.
 public var type : int = 0;
 
 
-function Start () 
-{
 
-}
-
-// run the interaction
+// run the interaction with the object
 function Interact() 
 {
     switch (type)

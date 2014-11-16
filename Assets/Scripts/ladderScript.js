@@ -1,8 +1,10 @@
 ﻿#pragma strict
+// Controls the player climbing/descending ladders.
 
 // holds the character's script
 private var charScript : characterControl;
 
+// get the character script
 function Start () 
 {
     charScript = GameObject.Find("Masaru").GetComponent(characterControl);

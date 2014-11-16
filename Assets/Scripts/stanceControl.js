@@ -1,11 +1,15 @@
 ﻿#pragma strict
 
+// controls the view of the user's stance
+
 // the sprites with the elemental form pictures
 var earthSprite : Sprite;
 var waterSprite : Sprite;
 var fireSprite : Sprite;
 var windSprite : Sprite;
 var heavenSprite : Sprite;
+// an array holding the sprites
+private var sprites : Sprite[];
 
 // my sprite renderer
 private var mySpriteRenderer : SpriteRenderer; 
@@ -13,8 +17,7 @@ private var mySpriteRenderer : SpriteRenderer;
 // holds the meditative state script to figure out whether we are in the meditative state.
 private var meditativeScript : MeditativeStateController;
 
-private var sprites : Sprite[];
-
+// initialize the sprites array with all of the sprites
 function Start () 
 {
     mySpriteRenderer = GetComponent("SpriteRenderer");
@@ -55,7 +58,7 @@ function Update ()
     }*/
 }
 
-// changes the meditative state based on the input integer
+// changes the stance state based on the input integer
 // 0 is Earth, 1 is Water, 2 is Fire, 3 is Wind, 4 is Heaven
 function changeStance(N : int)
 {

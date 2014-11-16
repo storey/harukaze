@@ -1,5 +1,9 @@
 ﻿#pragma strict
+// controls the meditative state's revolver wheel, which allows the user to choose their collection of
+// elements to use
 
+// basic empty sprite
+var baseSprite : Sprite;
 
 // the sprites with the elemental form pictures
 var earthSprite : Sprite;
@@ -8,46 +12,54 @@ var fireSprite : Sprite;
 var windSprite : Sprite;
 var heavenSprite : Sprite;
 
-// basic empty sprite
-var baseSprite : Sprite;
+// the array of sprites
+private var sprites : Sprite[];
 
-
+// the five circles
 private var enzo0 : Transform;
 private var enzo1 : Transform;
 private var enzo2 : Transform;
 private var enzo3 : Transform;
 private var enzo4 : Transform;
 
+// is it rotating?
 private var rotating: boolean;
 
+// how long does a rotation take?
 var animationTime : float = 0.4;
 
+// number of fixedUpdate stages a rotation takes
 private var numFrames : int;
 
+// number of degrees to move in a rotation
 private var fraction : float = 72;
 
+// number of degrees to move per step
 private var stepDegree : float;
 
+// currently selected circle in the wheel
 private var currentSelection : int;
 
-
-private var sprites : Sprite[];
-
+// the numerical results of the circles chosen.
 private var results : int[];
 
 // holds the meditative state script to figure out whether we are in the meditative state.
 private var meditativeScript : MeditativeStateController;
 
+// used to modify the stance in the HUD
 private var stanceScript : stanceControl;
 
 // get variables for the 5 circles inside the wheel
 function setup () 
 {
+    // initialize the results to -1 (empty)
     results = new int[5];
     for (var i : int; i < 5; i++)
     {
         results[i] = -1;
     }
+    
+    // populate the sprite array
     sprites = new Sprite[5];
     sprites[0] = earthSprite;
     sprites[1] = waterSprite;
@@ -55,31 +67,40 @@ function setup ()
     sprites[3] = windSprite;
     sprites[4] = heavenSprite;
     
+    // get the enzo circles
     enzo0 = GameObject.Find("EnzoWheelEnzo0").GetComponent(Transform);
     enzo1 = GameObject.Find("EnzoWheelEnzo1").GetComponent(Transform);
     enzo2 = GameObject.Find("EnzoWheelEnzo2").GetComponent(Transform);
     enzo3 = GameObject.Find("EnzoWheelEnzo3").GetComponent(Transform);
     enzo4 = GameObject.Find("EnzoWheelEnzo4").GetComponent(Transform);
     
+    // set the current selection to 0
     currentSelection = 0;
     
-    
+    // get the number of fixedUpdate frames that the wheel will last
     numFrames = Mathf.Floor(animationTime/Time.fixedDeltaTime);
     
+    // calculate the number of degrees to move per frame
     stepDegree = fraction / numFrames;
     
+    // the wheel doesn't start rotating right away
     rotating = false;
     
+    // get the proper scripts
     meditativeScript = GameObject.Find("MeditativeStateManager").GetComponent(MeditativeStateController);
     stanceScript = GameObject.Find("currentStance").GetComponent(stanceControl);
 }
 
+// each frame
 function Update () 
 {
+    // make sure we are in the meditative state and not rotating
     if(meditativeScript.inMedState)
     {
         if(!rotating)
         {
+            // if the user presses one of the appropriate keys, start the 
+            // correct rotation
             if(Input.GetKeyUp(KeyCode.Q))
             {
                 startRotation(0);
@@ -135,9 +156,11 @@ function resetVars()
     
 }
 
-// finish this meditative state
+// finish this meditative state 
 function finishState()
 {
+    // for now, we just set the user's stance in the HUD
+    // later, there will be tons of attacks that result from this
     if (results[0] != -1)
     {
         stanceScript.changeStance(results[0]);
@@ -157,7 +180,7 @@ function startRotation(Element : int)
     StartCoroutine(rotateCircle());
 }
 
-// rotate the circle the proper amount
+// rotate the circle the proper amount each fixed update
 function rotateCircle()
 {
     for (var i : int = 0; i < numFrames; i++)
@@ -171,6 +194,7 @@ function rotateCircle()
         enzo4.Rotate(Vector3.back * stepDegree);
     }
     rotating = false;
+    // when finished, leave the meditative state
     if (currentSelection >= 5)
     {
         meditativeScript.leaveState();
