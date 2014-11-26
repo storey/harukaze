@@ -11,9 +11,10 @@ function Start ()
 }
 
 // when the user touches the ladder, act appropriately
-function OnCollisionEnter2D(other : Collision2D) 
+function OnTriggerEnter2D(other : Collider2D) 
 {
-    if((other.collider.sharedMaterial.name).Equals("PlayerMaterial"))
+    var name : String = other.sharedMaterial.name;
+    if(name.Equals("PlayerMaterial") || name.Equals("PlayerFeetMaterial"))
     {
         charScript.ontoLadder();
     }
@@ -21,9 +22,11 @@ function OnCollisionEnter2D(other : Collision2D)
 }
 
 // when the user leaves the ladder, act appropriately
-function OnCollisionExit2D(other : Collision2D) 
+function OnTriggerExit2D(other : Collider2D) 
 {
-    if((other.collider.sharedMaterial.name).Equals("PlayerMaterial"))
+    var name : String = other.sharedMaterial.name;
+    var yVel : float = other.attachedRigidbody.velocity.y;
+    if((name.Equals("PlayerMaterial") && (yVel <= 0)) || (name.Equals("PlayerFeetMaterial") && (yVel >= 0)))
     {
         charScript.offLadder();
     }

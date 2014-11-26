@@ -14,10 +14,9 @@ private var HUD : GameObject;
 private var medView : GameObject;
 
 // get various scripts that this script must interact with
-// the script controlling the selections wheel, timer, and script that makes
+// the script controlling the selections wheel and script that makes
 // the pieces of the meditative state follow the user.
 private var wheelScript : meditativeWheel;
-private var timerScript : enzoTimerScript;
 private var followScript : HUDfollow;
 
 // when the function wakes up
@@ -31,12 +30,10 @@ function Awake ()
     medView = GameObject.Find("MeditativeState");
     
     wheelScript = GameObject.Find("EnzoWheel").GetComponent(meditativeWheel);
-    timerScript = GameObject.Find("EnzoTimer").GetComponent(enzoTimerScript);
     followScript = GameObject.Find("MeditativeState").GetComponent(HUDfollow);
     
     // setup the necessary scripts, ass they will be immediately disabled
     wheelScript.setup();
-    timerScript.setup();
     followScript.setup();
     
     // disable the various pieces of the meditative state
@@ -75,17 +72,11 @@ function enterState()
         
     // reset the element wheel
     wheelScript.resetVars();
-        
-    // reset and start the timer
-    timerScript.resetTimer();
-    timerScript.startTimer();
 }
 
 // leave the meditative state
 function leaveState()
 {
-    // stop the timer
-    timerScript.stopTimer();
     
     // exit the meditative state
     inMedState = false;

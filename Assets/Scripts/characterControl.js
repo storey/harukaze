@@ -134,7 +134,7 @@ function Update ()
         walled = Physics2D.Linecast(transform.position, onWallChecker.position, (1 << LayerMask.NameToLayer("Wall")));
         
         // if the jump button is pressed and the player is walled, wall jump
-        if(Input.GetButtonDown("Jump") && walled)
+        if(Input.GetKeyDown(KeyCode.Space) && walled)
         {
             wallJump = true;
             
@@ -182,7 +182,7 @@ function Update ()
             
         
             // if the jump button is pressed and the player is grounded and not crouching, jump
-            if (Input.GetButtonDown("Jump") && grounded && !crouching)
+            if (Input.GetKeyDown(KeyCode.Space) && grounded && !crouching)
             {
                 jump = true;
                 damageState = false;
@@ -190,7 +190,7 @@ function Update ()
             
             
             // if the crouching button is pressed and the player is grounded, (and the player isn't jumping), crouch
-            if (Input.GetKeyDown(KeyCode.S) && grounded && !jump && !walled && !wallJumping)
+            if (Input.GetKeyDown(KeyCode.S) && grounded && !platformed && !jump && !walled && !wallJumping && !laddered)
             {
                 crouching = true;
                 anim.SetBool("Crouching", true);
@@ -236,7 +236,7 @@ function FixedUpdate()
         }
         else if (Input.GetKeyUp(KeyCode.S))
         {
-            Debug.Log("down:"+Time.realtimeSinceStartup);
+            //Debug.Log("down:"+Time.realtimeSinceStartup);
             hanging = false;
             rb.gravityScale = 1;
         }
@@ -246,7 +246,16 @@ function FixedUpdate()
     else if (platformed && Input.GetKeyDown(KeyCode.S))
     {
         var platformScript : platformBehavior = currentPlatform.GetComponent(platformBehavior);
-        platformScript.fallThrough();
+        if (platformScript != null)
+        {
+            platformScript.fallThrough();
+        }
+        // if this is a no hang platform
+        else
+        {
+            var noHangScript : noHangPlatformBehavior = currentPlatform.GetComponent(noHangPlatformBehavior);
+            noHangScript.fallThrough();
+        }
     }
     // otherwise if they aren't wall jumping or crouching or hanging
     else if (!wallJumping && !crouching && !hanging) 
@@ -267,6 +276,10 @@ function FixedUpdate()
         // climb speed in the proper direction
         if (laddered)
         {
+            if (input == 0)
+            {
+                xVel = 0;
+            }
             yVel = 0;
             if(Input.GetKey(KeyCode.W))
             {
