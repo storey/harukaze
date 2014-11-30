@@ -19,8 +19,8 @@ private var sr : SpriteRenderer;
 // the script for the character
 private var charScript : characterControl;
 
-// hold the chakra bar GameObject
-private var cB : GameObject;
+// get the script to check whether the game is paused
+private var pauseScript : pauseMenuScript;
 
 function Start () 
 {
@@ -38,8 +38,9 @@ function Start ()
     
     stepFade = 1.0/numSteps;
     
-    cB = GameObject.Find("ChakraBar");
-    cB.SetActive(false);
+    // get the pause script
+    pauseScript = GameObject.Find("PauseMenu").GetComponent(pauseMenuScript);
+    
 }
 
 function Update () 
@@ -60,6 +61,6 @@ function fadeScreen()
         yield WaitForFixedUpdate;
         sr.color = new Color(1, 1, 1, 1-(i*stepFade));
     }
-    cB.SetActive(true);
     charScript.setFrozen(false);
+    pauseScript.setCanPause(true);
 }

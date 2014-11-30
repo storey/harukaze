@@ -19,6 +19,9 @@ private var medView : GameObject;
 private var wheelScript : meditativeWheel;
 private var followScript : HUDfollow;
 
+// get the script to check whether the game is paused
+private var pauseScript : pauseMenuScript;
+
 // when the function wakes up
 function Awake () 
 {
@@ -32,19 +35,22 @@ function Awake ()
     wheelScript = GameObject.Find("EnzoWheel").GetComponent(meditativeWheel);
     followScript = GameObject.Find("MeditativeState").GetComponent(HUDfollow);
     
-    // setup the necessary scripts, ass they will be immediately disabled
+    // setup the necessary scripts, as they will be immediately disabled
     wheelScript.setup();
     followScript.setup();
+    
+    // get the pause script
+    pauseScript = GameObject.Find("PauseMenu").GetComponent(pauseMenuScript);
     
     // disable the various pieces of the meditative state
     medView.SetActive(false);
     
 }
 
-// if the left control is down, enter the meditative state
+// if the left control is down and the user hasn't paused, enter the meditative state
 function Update () 
 {
-    if(Input.GetKeyUp(KeyCode.LeftControl))
+    if(Input.GetKeyUp(KeyCode.LeftControl) && !pauseScript.isPaused())
     {
         inMedState = !inMedState;
     }
