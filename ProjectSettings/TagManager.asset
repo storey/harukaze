@@ -75,3 +75,7 @@ TagManager:
     userID: 6
     uniqueID: 4013944821
     locked: 0
+  - name: Overlay
+    userID: 7
+    uniqueID: 1614786455
+    locked: 0

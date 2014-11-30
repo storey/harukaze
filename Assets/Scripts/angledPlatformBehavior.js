@@ -20,6 +20,9 @@ private var myConstant: float;
 // offest of the user's circle
 private var circleOffsetY: float;
 
+// allows the user to fall through the platform
+private var fallingThrough : boolean;
+
 // calculate a variety of necessary constants to allow quick determination of
 // whether the player is above the diagonal platform
 function Start() 
@@ -57,14 +60,26 @@ function FixedUpdate()
 {
     var charY : float = charTransform.position.y + circleOffsetY;
     var charX : float = charTransform.position.x;
+    var temp : float = ((mySlope * charX) - charY);
     // if the player is below the platform and it is enabled, disable it
-    if (myCollider.enabled && ((mySlope * charX) - charY - fudgeFactor) > myConstant)
+    if (myCollider.enabled && (temp - fudgeFactor) > myConstant)
     {
         myCollider.enabled = false;
     }
+    else if (!myCollider.enabled && fallingThrough && (temp - fudgeFactor) > myConstant)
+    {
+        fallingThrough = false;
+    }
     // if the player is above the platform and it is disabled, enable it
-    else if (!myCollider.enabled && ((mySlope * charX) - charY + fudgeFactor) < myConstant)
+    else if (!myCollider.enabled && !fallingThrough && (temp + fudgeFactor) < myConstant)
     {
         myCollider.enabled = true;
     }
+}
+
+// allow the user to fall through the platform
+function fallThrough()
+{
+    myCollider.enabled = false;
+    fallingThrough = true;
 }

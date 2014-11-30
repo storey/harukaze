@@ -51,6 +51,9 @@ private var wallJumping: boolean;
 // maximum speed at which the character can move horizontally
 var maxSpeed : float = 7.5;
 
+// speed at which the character wall jumps
+var wallJumpSpeed : float = 7.5;
+
 // the speed at which the character starts jumps
 var jumpSpeed : float = 16.0;
 
@@ -60,6 +63,9 @@ var climbSpeed : float = 4.0;
 // store the layer number of the Ground/Platform Layers
 var groundLayer : int = 12;
 var platformLayer : int = 13;
+
+// at what vertical speed should the land animation start playing?
+var landVerticalSpeed : float = 5.5;
 
 // store the player's height
 private var playerHeight : float;
@@ -74,6 +80,16 @@ private var meditativeScript : MeditativeStateController;
 // holds the control script of the camera that follows the player
 private var cameraScript : cameraControl;
 
+// used to determine whether the user has left the ground of moved from one ground to the next.
+// 0 means the user has definitely not recently left the ground
+// 1 means the user just left a ground but may still be on another ground
+// 2 means we have gone through one update state without having left the ground
+// 3 means we have certainly left the ground
+private var maybeOffGround : int = 0;
+
+// makes it possible to freeze the character in place for pausing, inventory, etc
+private var frozen = false;
+
 function Awake()
 {
     // get the offset and radius of the circle collider (used by angled platforms)
@@ -82,7 +98,7 @@ function Awake()
     
     // get the character sprite and player height
     var characterSprite : Sprite = GetComponent(SpriteRenderer).sprite;
-    playerHeight = characterSprite.bounds.max.y - characterSprite.bounds.min.y;
+    playerHeight = (characterSprite.bounds.max.y - characterSprite.bounds.min.y)*GetComponent(Transform).localScale.y;
     
     // get the camera script
     cameraScript = GameObject.Find("Main Camera").GetComponent(cameraControl);
@@ -102,8 +118,9 @@ function Start ()
 
 function Update () 
 { 
+    //Time.timeScale = 0.1;
     // make sure we aren't in the meditative state, which would mean everything shoudl be frozen
-    if (!meditativeScript.inMedState)
+    if (!frozen && !meditativeScript.inMedState)
     {
         // if the user is hanging and are above the platform, end the hanging
         if (hanging)
@@ -202,130 +219,155 @@ function Update ()
             }
         }
         
-        // set the user's horizontal and vertical speed appropriately in the animator
-        anim.SetFloat("HorizontalSpeed", Mathf.Abs(rb.velocity.x));
-        anim.SetFloat("VerticalSpeed", rb.velocity.y);
     }
 }
 
 // handle physics updates
 function FixedUpdate()
 {
+    if (!frozen)
+    {
+        // get user input in horizontal direction
+        var input = Input.GetAxis("Horizontal");
+        
+        // if maybeOffGround is large enough, we are definitely off the ground
+        if (maybeOffGround == 2)
+        {
+            leaveGround();
+        }
+        // if necessary, increment maybeOffGround to say we have gone through
+        // another update without being grounded
+        else if (maybeOffGround == 1)// || maybeOffGround == 2)
+        {
+            maybeOffGround++;
+        }
+        
+        // if the user is in the damage state and they press a movement key,
+        // cancel the damage state
+        if (damageState && (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D)))
+        {
+            cancelDamageState();
+        }
+        
+        // if the user is crouching or clinging to a wall, set their velocity to zero
+        if (crouching || (walled && ((input > 0 && facingRight) || (input < 0 && !facingRight))))
+        {
+            rb.velocity = Vector2(0,0);
+        }
+        // if the user is hanging, allow them to climb onto or drop from the platform
+        else if (hanging)
+        {
+            if (Input.GetKeyUp(KeyCode.W))
+            {
+                rb.velocity = Vector2(0, climbSpeed);
+            }
+            else if (Input.GetKeyUp(KeyCode.S))
+            {
+                //Debug.Log("down:"+Time.realtimeSinceStartup);
+                hanging = false;
+                rb.gravityScale = 1;
+            }
             
-    // get user input in horizontal direction
-    var input = Input.GetAxis("Horizontal");
-    
-    // if the user is in the damage state and they press a movement key,
-    // cancel the damage state
-    if (damageState && (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D)))
-    {
-        cancelDamageState();
-    }
-    
-    // if the user is crouching or clinging to a wall, set their velocity to zero
-    if (crouching || (walled && ((input > 0 && facingRight) || (input < 0 && !facingRight))))
-    {
-        rb.velocity = Vector2(0,0);
-    }
-    // if the user is hanging, allow them to climb onto or drop from the platform
-    else if (hanging)
-    {
-        if (Input.GetKeyUp(KeyCode.W))
-        {
-            rb.velocity = Vector2(0, climbSpeed);
         }
-        else if (Input.GetKeyUp(KeyCode.S))
+        // if the user is on a platform, allow them to drop to the hanging position.
+        else if (platformed && Input.GetKeyDown(KeyCode.S))
         {
-            //Debug.Log("down:"+Time.realtimeSinceStartup);
-            hanging = false;
-            rb.gravityScale = 1;
-        }
-        
-    }
-    // if the user is on a platform, allow them to drop to the hanging position.
-    else if (platformed && Input.GetKeyDown(KeyCode.S))
-    {
-        var platformScript : platformBehavior = currentPlatform.GetComponent(platformBehavior);
-        if (platformScript != null)
-        {
-            platformScript.fallThrough();
-        }
-        // if this is a no hang platform
-        else
-        {
-            var noHangScript : noHangPlatformBehavior = currentPlatform.GetComponent(noHangPlatformBehavior);
-            noHangScript.fallThrough();
-        }
-    }
-    // otherwise if they aren't wall jumping or crouching or hanging
-    else if (!wallJumping && !crouching && !hanging) 
-    {
-        // set their x velocity to the input and leave the y velocity the same
-        var xVel : float = input * maxSpeed;
-        var yVel : float = rb.velocity.y;
-        
-        // if the user is in the damage state or there is no input,
-        // leave the x velocity alone
-        if(damageState || input == 0)
-        {
-            xVel = rb.velocity.x;
-        }
-        
-        // if the user is on a ladder, set their y velocity to 0 unless
-        // they are trying to move up or down, in which case set it ot the
-        // climb speed in the proper direction
-        if (laddered)
-        {
-            if (input == 0)
+            var platformScript : platformBehavior = currentPlatform.GetComponent(platformBehavior);
+            if (platformScript != null)
             {
-                xVel = 0;
+                platformScript.fallThrough();
             }
-            yVel = 0;
-            if(Input.GetKey(KeyCode.W))
+            // if this is a no hang platform
+            else
             {
-                yVel = climbSpeed;
-            }
-            else if(Input.GetKey(KeyCode.S))
-            {
-                yVel = -1*climbSpeed;
+                var noHangScript : noHangPlatformBehavior = currentPlatform.GetComponent(noHangPlatformBehavior);
+                if (noHangScript != null)
+                {
+                    noHangScript.fallThrough();
+                }
+                else
+                {
+                    var angledScript : angledPlatformBehavior = currentPlatform.GetComponent(angledPlatformBehavior);
+                    if (angledScript != null)
+                    {
+                        angledScript.fallThrough();
+                    }
+                }
             }
         }
-        
-        // set teh velocity
-        rb.velocity = Vector2(xVel, yVel);
+        // otherwise if they aren't wall jumping or crouching or hanging
+        else if (!wallJumping && !crouching && !hanging) 
+        {
+            // set their x velocity to the input and leave the y velocity the same
+            var xVel : float = input * maxSpeed;
+            var yVel : float = rb.velocity.y;
+            
+            // if the user is in the damage state or there is no input,
+            // leave the x velocity alone
+            if(damageState || input == 0)
+            {
+                xVel = rb.velocity.x;
+            }
+            
+            // if the user is on a ladder, set their y velocity to 0 unless
+            // they are trying to move up or down, in which case set it ot the
+            // climb speed in the proper direction
+            if (laddered)
+            {
+                if (input == 0)
+                {
+                    xVel = 0;
+                }
+                yVel = 0;
+                if(Input.GetKey(KeyCode.W))
+                {
+                    yVel = climbSpeed;
+                }
+                else if(Input.GetKey(KeyCode.S))
+                {
+                    yVel = -1*climbSpeed;
+                }
+            }
+            
+            // set teh velocity
+            rb.velocity = Vector2(xVel, yVel);
 
-        // if the character is facing left and moving right, set them to moving left
-        if (input > 0 && !facingRight)
+            // if the character is facing left and moving right, set them to moving left
+            if (input > 0 && !facingRight)
+            {
+                FlipPlayer();
+            }
+            // or if the character is facing right and moving left, set appropriately
+            else if (input < 0 && facingRight)
+            {
+                FlipPlayer();
+            }
+        }
+        // if the user wants to wall jump, wall jump
+        if (wallJump)
         {
+            var sideSpeed : float = wallJumpSpeed;
+            if (facingRight)
+            {
+                sideSpeed *= -1.0;
+            }
+            var upSpeed : float = wallJumpSpeed*1.5;
             FlipPlayer();
+            rb.velocity = Vector2(sideSpeed, upSpeed);
+            
+            wallJump = false;
+            jump = false;
         }
-        // or if the character is facing right and moving left, set appropriately
-        else if (input < 0 && facingRight)
-        {
-            FlipPlayer();
+        // if the user wants to jump, jump
+        else if (jump)
+        { 
+            rb.velocity = Vector2(rb.velocity.x, jumpSpeed);
+            wallJump = false;
+            jump = false;
         }
-    }
-    // if the user wants to wall jump, wall jump
-    if (wallJump)
-    {
-        var sideSpeed : float = maxSpeed;
-        if (facingRight)
-        {
-            sideSpeed *= -1.0;
-        }
-        var upSpeed : float = maxSpeed*1.5;
-        FlipPlayer();
-        rb.velocity = Vector2(sideSpeed, upSpeed);
-        
-        wallJump = false;
-        jump = false;
-    }
-    // if the user wants to jump, jump
-    else if (jump)
-    { 
-        rb.velocity = Vector2(rb.velocity.x, jumpSpeed);
-        wallJump = false;
-        jump = false;
+        // set the user's horizontal and vertical speed appropriately in the animator
+        anim.SetFloat("HorizontalSpeed", Mathf.Abs(rb.velocity.x));
+        anim.SetFloat("VerticalSpeed", rb.velocity.y);
     }
     
 }
@@ -426,7 +468,7 @@ function OnCollisionEnter2D(coll : Collision2D)
 // with something, check whether they are grounded
 function OnCollisionStay2D(coll : Collision2D)
 {
-    if (!grounded)
+    if (maybeOffGround != 0)
     {
         checkGrounded(coll);
     }
@@ -459,13 +501,41 @@ function checkGrounded(coll : Collision2D)
             }
         }
     }
+    if (grounded)
+    {
+        maybeOffGround = 0;
+    }
+    // if the vertical speed is large enough, play the land animation if the
+    // user hits the ground next frame.
+    if (Mathf.Abs(coll.relativeVelocity.y) > landVerticalSpeed)
+    {
+        anim.SetBool("shouldLand", true);
+    }
+    else
+    {
+        anim.SetBool("shouldLand", false);
+    }
 }
 
-// when the user leaves a collision, set them to not grounded
+// when the user leaves a collision, start the checker for whether
+// the user has left the ground
 function OnCollisionExit2D()
 {
+    maybeOffGround = 1;
+}
+
+// called when the user leaves the ground
+function leaveGround()
+{
+    maybeOffGround = 0;
     grounded = false;
     platformed = false;
     anim.SetBool("Grounded", grounded);
     anim.SetBool("Platformed", platformed);
+}
+
+// set whether the character is frozen or not
+function setFrozen(f : boolean)
+{
+    frozen = f;
 }

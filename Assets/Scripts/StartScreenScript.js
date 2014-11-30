@@ -56,7 +56,7 @@ function Update ()
     }
 }
 
-// rotate the circle the proper amount each fixed update
+// slide a screen the proper amount each fixed update
 function slideScreen()
 {
     for (var i : int = 0; i < numSteps; i++)
